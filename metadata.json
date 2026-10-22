@@ -1,0 +1,8 @@
+{
+  "name": "Remix 3D Cozy Snow Plow Game",
+  "description": "基于 Three.js 和 WebAudio 构建的 3D 微型球体扫雪与Boss对决游戏。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
