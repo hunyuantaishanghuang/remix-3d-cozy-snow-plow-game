@@ -12440,9 +12440,27 @@ function updateCharacterAnimationSystem(racer, idx, dt, rawDt, elapsed) {
       updateMpTopPillAndRoster();
     }
 
-    function connectMultiplayerWebSocket() {
+    // 联机后端地址解析：默认同源（本地 dev 或自带 server.ts）。部署在 GitHub Pages 等纯静态托管时，
+    // 用 ?server=wss://... 查询参数或 window.MP_SERVER_URL 指定联机后端（EdgeOne Makers）。
+    const MP_DEFAULT_SERVER = '';
+    function resolveMultiplayerWsUrl() {
+      const paramServer = mpUrlParams.get('server');
+      const configured = (typeof window.MP_SERVER_URL === 'string' && window.MP_SERVER_URL) || MP_DEFAULT_SERVER;
+      const base = paramServer || configured;
+      if (base) {
+        try {
+          const u = new URL(base, window.location.href);
+          if (u.protocol === 'https:') u.protocol = 'wss:';
+          else if (u.protocol === 'http:') u.protocol = 'ws:';
+          return u.toString().replace(/\/$/, '');
+        } catch (_e) {}
+      }
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${proto}//${window.location.host}`;
+      return `${proto}//${window.location.host}`;
+    }
+
+    function connectMultiplayerWebSocket() {
+      const wsUrl = resolveMultiplayerWsUrl();
       let ws;
       try {
         ws = new WebSocket(wsUrl);
